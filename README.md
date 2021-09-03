@@ -2,7 +2,7 @@
 Arbitrary accurate big number in C#.
 Made for incremental game
 
-***DISCLAMER : Code is not tested thoroughly and provided AS-IS***
+***DISCLAMER : Code is fresh and not tested thoroughly and provided AS-IS***
 
 there isn't even test code ¯\\_(ツ)_/¯ 
 
