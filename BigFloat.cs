@@ -102,6 +102,7 @@ struct BigFloat : IComparable, IComparable<BigFloat>, IEquatable<BigFloat>
     }
     #endregion
 
+    #region basic arithmetic
     public BigFloat Add(BigFloat other)
     {
         if (this.n > other.n)
@@ -183,15 +184,6 @@ struct BigFloat : IComparable, IComparable<BigFloat>, IEquatable<BigFloat>
     {
         return Log10() * Math.Log(baseValue, 10);
     }
-    public override string ToString()
-    {
-        //default precision = 10
-        return ToString(10);
-    }
-    public string ToString(int? maxLength = null)
-    {
-        return $"{m}e{n}";
-    }
 
     public int CompareTo(BigFloat other)
     {
@@ -212,7 +204,7 @@ struct BigFloat : IComparable, IComparable<BigFloat>, IEquatable<BigFloat>
     }
     public override bool Equals(object other)
     {
-        if (other == null || GetType() != other.GetType())
+        if (GetType() != other.GetType())
         {
             return false;
         }
@@ -223,13 +215,17 @@ struct BigFloat : IComparable, IComparable<BigFloat>, IEquatable<BigFloat>
     {
         return (other.m == this.m && other.n == this.n);
     }
-
     public override int GetHashCode()
     {
         return base.GetHashCode();
     }
+    #endregion
 
-    //static methods
+    #region Derived static Arithmetic methods
+    public static int Compare(BigFloat left, BigFloat right)
+    {
+        return (new BigFloat(left)).CompareTo(right);
+    }
     public static new bool Equals(object left, object right)
     {
         return (((BigInteger)left).Equals((BigInteger)right));
@@ -267,6 +263,27 @@ struct BigFloat : IComparable, IComparable<BigFloat>, IEquatable<BigFloat>
     {
         return (new BigFloat(left)).Remainder(right);
     }
+    public static BigFloat Log10(BigFloat value)
+    {
+        return (new BigFloat(value)).Log10();
+    }
+    public static BigFloat Log(BigFloat value, double baseValue)
+    {
+        return (new BigFloat(value)).Log(baseValue);
+    }
+    #endregion
+
+    #region ToString and Parse
+    public override string ToString()
+    {
+        //default precision = 10
+        return ToString(10);
+    }
+    public string ToString(int? maxLength = null)
+    {
+        return $"{m}e{n}";
+    }
+
     public static BigFloat Parse(string value)
     {
         if (value == null)
@@ -319,24 +336,10 @@ struct BigFloat : IComparable, IComparable<BigFloat>, IEquatable<BigFloat>
             return false;
         }
     }
-    public static int Compare(BigFloat left, BigFloat right)
-    {
-        if (BigFloat.Equals(left, null))
-            throw new ArgumentNullException("left");
-        if (BigFloat.Equals(right, null))
-            throw new ArgumentNullException("right");
 
-        return (new BigFloat(left)).CompareTo(right);
-    }
-    public static BigFloat Log10(BigFloat value)
-    {
-        return (new BigFloat(value)).Log10();
-    }
-    public static BigFloat Log(BigFloat value, double baseValue)
-    {
-        return (new BigFloat(value)).Log(baseValue);
-    }
+    #endregion
 
+    #region Derived Functions and Operators
     public static BigFloat operator -(BigFloat value)
     {
         return (new BigFloat(value)).Negate();
@@ -402,16 +405,9 @@ struct BigFloat : IComparable, IComparable<BigFloat>, IEquatable<BigFloat>
     {
         return Compare(left, right) >= 0;
     }
-
-    public static bool operator true(BigFloat value)
-    {
-        return value != 0;
-    }
-    public static bool operator false(BigFloat value)
-    {
-        return value == 0;
-    }
-
+    #endregion
+    
+    #region Casts
     public static explicit operator decimal(BigFloat value)
     {
         if (decimal.MinValue > value) throw new System.OverflowException("value is less than System.decimal.MinValue.");
@@ -434,7 +430,7 @@ struct BigFloat : IComparable, IComparable<BigFloat>, IEquatable<BigFloat>
         return (float)value.m / (float)value.n;
     }
 
-    //byte, sbyte, 
+
     public static implicit operator BigFloat(byte value)
     {
         return new BigFloat((uint)value);
@@ -487,4 +483,5 @@ struct BigFloat : IComparable, IComparable<BigFloat>, IEquatable<BigFloat>
     {
         return new BigFloat(value);
     }
+    #endregion
 }
