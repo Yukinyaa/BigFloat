@@ -6,7 +6,7 @@ Made for incremental game
 
 there isn't even test code ¯\\_(ツ)_/¯ 
 
-# How to use idk
+# How to use
 Intended for UnityEngine.
 
 To use outside unity, change m to double and Mathf to Math then there *should* be no problem 
