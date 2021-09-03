@@ -1,5 +1,5 @@
 # BigFloat
-Arbitrary accurate big number in C#, Made for incremental game
+Fixed-accurate big number in C#, Made for incremental game
 
 WOW SO BIG NUMBER
 
@@ -7,6 +7,8 @@ WOW SO BIG NUMBER
 Expressed by scientific notation. (e.g. 1.23e456 or 1.23E+456) 
 
 Exponent(1.23 part on example) is `float`,  significand(456 part on example) is `BigInteger`.
+
+Parsing from integers may have some loss in precision, but designed to precise up to 9~10 digits.
 
 ## Features
 Basic operations like `+` `-` `/` `*` `%` `ABS` etc.
