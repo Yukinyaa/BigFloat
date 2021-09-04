@@ -1,0 +1,15 @@
+{
+  "name": "com.yukinyaa.bigfloat",
+  "version": "1.1.4",
+  "displayName": "BigFloat",
+  "description": "Fixed-accurate big floating point number",
+  "keywords": [
+    "BigFloat",
+    "Math"
+  ],
+  "author": {
+    "name": "yukinyaa",
+    "email": "yukinyaa712@gmail.com",
+    "url": "https://github.com/Yukinyaa/BigFloat/"
+  }
+}
