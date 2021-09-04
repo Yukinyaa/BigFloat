@@ -15,19 +15,20 @@ namespace BigFloatNumerics
         public float m { get; private set; } // you could set this to `double` and there should be minimal problem
         public BigInteger n { get; private set; }
         public static BigFloat Zero = new BigFloat() { m = 0, n = 0 };
-        public static BigFloat One = new BigFloat() { m = 1, n = 0 };
-        public static BigFloat Ten = new BigFloat() { m = 1, n = 1 };
+        public static BigFloat One = new BigFloat() { m = 01, n = 0 };
+        const float CompTolerance = 1e-3f;
 
         public BigFloat Arrange() // Sets Numerator to be at range of `[1,10)`
         {
-            if (m == 0)
+            float absm = Mathf.Abs(m);
+            if (absm < float.Epsilon)
             {
                 n = 0;
                 return this;
             }
-            int log = (int)Math.Floor(Math.Log10(m));
+            int log = (int)Mathf.Floor(Mathf.Log10(absm));
             n += log;
-            m /= Mathf.Pow(log, 10);
+            m /= Mathf.Pow(10, log);
             return this;
         }
 
@@ -41,29 +42,26 @@ namespace BigFloatNumerics
         public BigFloat(float m, BigInteger n)
         {
             this.m = m;
-            if (n == 0)
-                throw new ArgumentException("denominator equals 0");
-            this.n = BigInteger.Abs(n);
+            this.n = n;
+            Arrange();
         }
         public BigFloat(BigInteger value)
         {
-            int log = (int)Math.Floor(BigInteger.Log10(value));
+            int log = (int)Math.Floor(BigInteger.Log10(BigInteger.Abs(value)));
+            if (log < 8)
+            {
+                m = (float)value;
+                Arrange();
+                return;
+            }
             n = log;
-            int valueDividedByLog = (int)(value / BigInteger.Pow(log - 8, 10));
+            int valueDividedByLog = (int)(value / BigInteger.Pow(10, log - 8));
             m = valueDividedByLog / 1e8f; // Int.Max =~ 2e9. so divide to int range then divide again to double range.
         }
         public BigFloat(BigFloat value)
         {
-            if (BigFloat.Equals(value, null))
-            {
-                this.m = 0;
-                this.n = BigInteger.One;
-            }
-            else
-            {
-                this.m = value.m;
-                this.n = value.n;
-            }
+            this.m = value.m;
+            this.n = value.n;
         }
         public BigFloat(ulong value)
         {
@@ -115,7 +113,7 @@ namespace BigFloatNumerics
             else
             {
                 if (other.n - this.n > 20) return other;
-                m *= Mathf.Pow(10, this.m - other.m);
+                m *= Mathf.Pow(10, (float)(this.n - other.n));
                 m += other.m;
                 this.n = other.n;
                 this.Arrange();
@@ -202,10 +200,15 @@ namespace BigFloatNumerics
 
         public int CompareTo(BigFloat other)
         {
+            int thisSign = this.m.CompareTo(0);
+            int otherSign = other.m.CompareTo(0);
+
+            if (thisSign != otherSign) return thisSign.CompareTo(otherSign);
+
             int mComp = BigInteger.Compare(this.n, other.n);
             if (mComp != 0)
-                return mComp;
-            return this.m.CompareTo(other.m);
+                return mComp * thisSign;
+            return this.m.CompareTo(other.m) * thisSign;
         }
         public int CompareTo(object other)
         {
@@ -217,15 +220,12 @@ namespace BigFloatNumerics
 
             return CompareTo((BigFloat)other);
         }
-
-        public static explicit operator BigInteger(BigFloat v)
-        {
-            throw new NotImplementedException();
-        }
-
         public bool Equals(BigFloat other)
         {
-            return (other.m == this.m && other.n == this.n);
+            if (other.n == this.n)
+                if (other.m - this.m < CompTolerance)
+                    return true;
+            return false;
         }
         public override int GetHashCode()
         {
@@ -288,7 +288,7 @@ namespace BigFloatNumerics
         #region ToString and Parse
         public override string ToString()
         {
-            return $"{m:D10}e{n}";
+            return $"{m:F10}e{n}";
         }
         public string ToHumanFriendlyString(int? maxLength = null)
         {
@@ -341,6 +341,7 @@ namespace BigFloatNumerics
             {
                 //decimal point (length - pos - 1)
                 float Signifacand = float.Parse(value.Substring(0, pos - 1));
+
                 BigInteger denominator = BigInteger.Parse(value.Substring(pos));
 
                 return (new BigFloat(Signifacand, denominator)).Arrange();
@@ -443,12 +444,19 @@ namespace BigFloatNumerics
 
             return (decimal)(value.m * Math.Pow(10, (double)value.n));
         }
+
+        public static explicit operator BigInteger(BigFloat v)
+        {
+            //return BigInteger.Multiply(BigInteger.Pow(10, v.n), value.m);
+            throw new NotImplementedException();
+        }
+
         public static explicit operator double(BigFloat value)
         {
             if (double.MinValue > value) throw new System.OverflowException("value is less than System.double.MinValue.");
             if (double.MaxValue < value) throw new System.OverflowException("value is greater than System.double.MaxValue.");
 
-            return (double)(value.m * Math.Pow(10, (double)value.n));
+            return (double)value.m * Math.Pow(10, (double)value.n);
         }
         public static explicit operator float(BigFloat value)
         {
@@ -456,6 +464,14 @@ namespace BigFloatNumerics
             if (float.MaxValue < value) throw new System.OverflowException("value is greater than System.float.MaxValue.");
 
             return (float)(value.m * Mathf.Pow(10, (float)value.n));
+        }
+
+        public static explicit operator int(BigFloat value)
+        {
+            if (float.MinValue > value) throw new System.OverflowException("value is less than System.float.MinValue.");
+            if (float.MaxValue < value) throw new System.OverflowException("value is greater than System.float.MaxValue.");
+
+            return (int)(value.m * Mathf.Pow(10, (float)value.n));
         }
 
 
