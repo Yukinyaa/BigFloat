@@ -35,14 +35,11 @@ namespace BigFloatNumerics
             Assert.AreEqual(5, (int)(BigFloat)5);
 
             BigFloat veryLargeNumber = new BigFloat(int.MaxValue) * 62;
-            Assert.AreEqual((float)veryLargeNumber, ((float)int.MaxValue) * 62);
+            Assert.IsTrue(veryLargeNumber > int.MaxValue);
 
             void Func() { int tmp = (int)veryLargeNumber; }
 
             Assert.That(Func, Throws.TypeOf<OverflowException>());
-        }
-        public void CastWrapper<T>(T a)
-        {
         }
         [Test]
         public void CastFromBigIntTest()
@@ -85,7 +82,7 @@ namespace BigFloatNumerics
         {
             Assert.AreEqual(new BigFloat(1.2e1), new BigFloat(5) + new BigFloat(7));
             Assert.AreEqual(new BigFloat(2e10), new BigFloat(1e10) + new BigFloat(1e10));
-            Assert.AreEqual(new BigFloat(2e50), new BigFloat(1e50) + new BigFloat(1e10));
+            Assert.AreEqual(new BigFloat(1e50), new BigFloat(1e50) + new BigFloat(1e10));
         }
         [Test]
         public void NegateTest()
@@ -99,11 +96,49 @@ namespace BigFloatNumerics
         [Test]
         public void SubTest()
         {
-            Assert.AreEqual(new BigFloat(2), new BigFloat(5) - new BigFloat(7));
+            Assert.AreEqual(new BigFloat(-2), new BigFloat(5) - new BigFloat(7));
             Assert.AreEqual(new BigFloat(0), new BigFloat(1e10) - new BigFloat(1e10));
 
-            Assert.AreEqual(new BigFloat(0), new BigFloat(1e10) - new BigFloat(1e10));
+            Assert.AreEqual(new BigFloat(1e8), new BigFloat(1e10 + 1e8) - new BigFloat(1e10));
         }
+
+        [Test]
+        public void DivideTest()
+        {
+            Assert.AreEqual(new BigFloat(2), new BigFloat(4) / new BigFloat(2));
+            Assert.AreEqual(new BigFloat(512), new BigFloat(1024) / new BigFloat(2));
+
+            Assert.AreEqual(new BigFloat(256), new BigFloat(2048) / new BigFloat(8));
+
+            Assert.AreEqual(new BigFloat(5, 7), new BigFloat(1, 10) / new BigFloat(2, 2));
+        }
+
+        [Test]
+        public void CompareTest()
+        {
+            Assert.AreEqual(true, BigFloat.One > BigFloat.Zero);
+            Assert.AreEqual(false, BigFloat.One < BigFloat.Zero);
+            Assert.AreEqual(false, BigFloat.One == BigFloat.Zero);
+
+            Assert.AreEqual(true, new BigFloat(512) > new BigFloat(500) );
+            Assert.AreEqual(true, BigFloat.One >= BigFloat.One);
+
+            Assert.AreEqual(true, new BigFloat(9, 10) <= new BigFloat(9, 10));
+            Assert.AreEqual(true, new BigFloat(-1, 10) < new BigFloat(1, 10));
+            Assert.AreEqual(true, new BigFloat(-1, 10) <= new BigFloat(1, 10));
+
+
+            Assert.AreEqual(true, new BigFloat(1, 0) > new BigFloat(1, -1));
+        }
+        [Test]
+        public void LargeCompareTest()
+        {
+
+            Assert.AreEqual(true, new BigFloat(9, 123959) > new BigFloat(-9, 1284423));
+            Assert.AreEqual(true, new BigFloat(-1, 10) < new BigFloat(1, 10));
+            Assert.AreEqual(true, new BigFloat(-1, 10) <= new BigFloat(1, 10));
+        }
+
 
         [Test]
         public void CompareByHash()
@@ -112,5 +147,6 @@ namespace BigFloatNumerics
             Assert.AreEqual(new BigFloat(9, 9).GetHashCode(), new BigFloat(9, 9).GetHashCode());
             Assert.AreEqual(new BigFloat(8, 0).GetHashCode(), new BigFloat(8, 0).GetHashCode());
         }
+
     }
 }

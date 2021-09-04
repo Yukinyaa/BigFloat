@@ -16,7 +16,8 @@ namespace BigFloatNumerics
         public BigInteger n { get; private set; }
         public static BigFloat Zero = new BigFloat() { m = 0, n = 0 };
         public static BigFloat One = new BigFloat() { m = 01, n = 0 };
-        const float CompTolerance = 1e-3f;
+        const float CompTolerance = 1e-5f;
+        const int CompTolerancei = 5;
 
         public BigFloat Arrange() // Sets Numerator to be at range of `[1,10)`
         {
@@ -141,6 +142,7 @@ namespace BigFloatNumerics
 
             this.m /= other.m;
             this.n -= other.n;
+            this.Arrange();
             return this;
         }
         public BigFloat Remainder(BigFloat other)
@@ -189,6 +191,10 @@ namespace BigFloatNumerics
             m = -m;
             return this;
         }
+        public BigInteger Log10i()
+        {
+            return n;
+        }
         public BigFloat Log10()
         {
             return Mathf.Log10(m) + (BigFloat)n;
@@ -200,15 +206,14 @@ namespace BigFloatNumerics
 
         public int CompareTo(BigFloat other)
         {
-            int thisSign = this.m.CompareTo(0);
-            int otherSign = other.m.CompareTo(0);
+            var diff = this - other;
 
-            if (thisSign != otherSign) return thisSign.CompareTo(otherSign);
+            if (diff.n == 0 && diff.m == 0)
+                return 0;
+            if (this.n - diff.n > CompTolerancei)
+                return 0;
 
-            int mComp = BigInteger.Compare(this.n, other.n);
-            if (mComp != 0)
-                return mComp * thisSign;
-            return this.m.CompareTo(other.m) * thisSign;
+            else return diff.m.CompareTo(0);
         }
         public int CompareTo(object other)
         {
@@ -222,10 +227,8 @@ namespace BigFloatNumerics
         }
         public bool Equals(BigFloat other)
         {
-            if (other.n == this.n)
-                if (other.m - this.m < CompTolerance)
-                    return true;
-            return false;
+            int comResult = CompareTo(other);
+            return comResult == 0;
         }
         public override int GetHashCode()
         {
@@ -468,8 +471,8 @@ namespace BigFloatNumerics
 
         public static explicit operator int(BigFloat value)
         {
-            if (float.MinValue > value) throw new System.OverflowException("value is less than System.float.MinValue.");
-            if (float.MaxValue < value) throw new System.OverflowException("value is greater than System.float.MaxValue.");
+            if (int.MinValue > value) throw new System.OverflowException("value is less than System.float.MinValue.");
+            if (int.MaxValue < value) throw new System.OverflowException("value is greater than System.float.MaxValue.");
 
             return (int)(value.m * Mathf.Pow(10, (float)value.n));
         }
