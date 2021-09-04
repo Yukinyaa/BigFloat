@@ -14,7 +14,7 @@ Parsing may have some loss in precision, but designed to precise up to 9~10 digi
 Basic operations like `+` `-` `/` `*` `%` `ABS` etc.
 
 # DISCLAMER
-*** : Code is fresh and not tested thoroughly. provided AS-IS***
+*** Code is fresh and not tested thoroughly. provided AS-IS***
 
 there isn't even test code ¯\\_(ツ)_/¯ 
 
