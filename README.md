@@ -10,15 +10,13 @@ Test shows 5 digit accuracy(is being tested though)
 # How to use
 
 ## Using UPM
-Add `https://github.com/Yukinyaa/BigFloat.git` via your UPM package.
+Add `https://github.com/Yukinyaa/BigFloat.git` at your package manager.
 See [Guide](https://docs.unity3d.com/Manual/upm-ui-giturl.html) for detailed instruction.
 
 ## Oter use
 This package is designed for UnityEngine use.
 
 To use outside unity, change m to double and Mathf to Math then there *should* be no problem.
-
-Test cases are intended for 
 
 # Contribution
 More test cases are always welcome.
