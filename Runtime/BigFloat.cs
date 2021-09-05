@@ -12,12 +12,16 @@ namespace BigFloatNumerics
     public struct BigFloat : IComparable, IComparable<BigFloat>, IEquatable<BigFloat>
     ///number is m × 10^n
     {
-        public float m { get; private set; } // you could set this to `double` and there should be minimal problem
+        public float m { get; private set; } // you could set this to `double` and there should be minimal problem. Decimal is better.
         public BigInteger n { get; private set; }
-        public static BigFloat Zero = new BigFloat() { m = 0, n = 0 };
-        public static BigFloat One = new BigFloat() { m = 01, n = 0 };
-        const float CompTolerance = 1e-5f;
-        const int CompTolerancei = 5;
+        public static readonly BigFloat Zero = new BigFloat() { m = 0, n = 0 };
+        public static readonly BigFloat One = new BigFloat() { m = 01, n = 0 };
+
+        public static readonly BigFloat IntMax = (BigFloat)int.MaxValue;
+
+        const float CompTolerance = 1e-6f;
+        const int CompTolerancei = 6;
+
 
         public BigFloat Arrange() // Sets Numerator to be at range of `[1,10)`
         {
@@ -94,11 +98,13 @@ namespace BigFloatNumerics
             n = BigInteger.Zero;
             Arrange();
         }
-        public BigFloat(double value) : this(value.ToString("e9"))// converts to "123e+5678", hence "+5678" can be parsed correctly
+        public BigFloat(double value) : this(value.ToString("e9"))// converts to "123e+5678", hence "+5678" can be parsed correctly, is very lazy approach
         {
         }
-        public BigFloat(decimal value) : this(value.ToString("e9"))
+        public BigFloat(decimal value)
         {
+            m = (float)value;
+            Arrange();
         }
         #endregion
 
@@ -299,7 +305,7 @@ namespace BigFloatNumerics
                 return $"{m:F10}e{n}";
             if (BigInteger.Abs(n) < maxLength)
             {
-                return $"{(double)m:F99}".Substring(0, maxLength ?? 0);
+                return $"{(double)m:F99}".Substring(0, (int)maxLength);
             }
             else
             {
@@ -343,7 +349,7 @@ namespace BigFloatNumerics
             else
             {
                 //decimal point (length - pos - 1)
-                float Signifacand = float.Parse(value.Substring(0, pos - 1));
+                float Signifacand = float.Parse(value.Substring(0, pos));
 
                 BigInteger denominator = BigInteger.Parse(value.Substring(pos));
 
@@ -450,8 +456,12 @@ namespace BigFloatNumerics
 
         public static explicit operator BigInteger(BigFloat v)
         {
-            //return BigInteger.Multiply(BigInteger.Pow(10, v.n), value.m);
-            throw new NotImplementedException();
+            if ((v.n - 5) > int.MaxValue) throw new OverflowException("value is too large");
+            if ((v > int.MaxValue || v < int.MinValue))
+            {
+                return BigInteger.Multiply((BigInteger)(v.m * 1e5f), BigInteger.Pow(10, (int)(v.n - 5)));
+            }
+            else return (int)v;
         }
 
         public static explicit operator double(BigFloat value)
