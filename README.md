@@ -16,7 +16,10 @@ Basic operations like `+` `-` `/` `*` `%` `ABS` etc.
 # DISCLAMER
 ***Code is fresh and not tested thoroughly. provided AS-IS***
 
-there isn't even test code ¯\\_(ツ)_/¯ 
+# Contribution
+More test cases are always welcome.
+
+Fork then PR.
 
 # How to use
 Intended for UnityEngine.
