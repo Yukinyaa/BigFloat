@@ -16,7 +16,7 @@ See [Guide](https://docs.unity3d.com/Manual/upm-ui-giturl.html) for detailed ins
 ## Oter use
 This package is designed for UnityEngine use.
 
-To use outside unity, change m to double and Mathf to Math then there *should* be no problem.
+To use outside unity, change m to double(or decimal for max accuracy) and Mathf to Math then there *should* be no problem.
 
 # Contribution
 More test cases are always welcome.
