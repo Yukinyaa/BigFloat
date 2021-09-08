@@ -4,6 +4,12 @@ Fixed-accurate big number in C#, Made for incremental game
 WOW SO BIG NUMBER
 
 ## Features
+Two types. BigFloat, BiggerFloat.
+
+BigFloat has capacity of  9ee18 (or 9.99999e+(9.22e+18))
+
+BiggerFloat has no limits in size.
+
 Basic operations like `+` `-` `/` `*` `ABS` etc.
 Test shows 5 digit accuracy(is being tested though)
 
@@ -27,7 +33,7 @@ More test cases are always welcome.
 ## Implimentation
 Expressed by scientific notation. (e.g. 1.23e456 or 1.23E+456) 
 
-Exponent(1.23 part on example) is `float`,  significand(456 part on example) is `BigInteger`.
+Exponent(1.23 part on example) is `float`,  significand(456 part on example) is `long` for `BigFloat`, and `BigInteger` in `BiggerFloat`.
 
 Parsing may have some loss in precision, but designed to precise up to 9~10 digits.
 

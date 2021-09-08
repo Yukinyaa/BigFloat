@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,21 +9,21 @@ using UnityEngine;
 namespace BigFloatNumerics
 {
     [Serializable]
-    public struct BigFloat : IComparable, IComparable<BigFloat>, IEquatable<BigFloat>
+    public struct BiggerFloat : IComparable, IComparable<BiggerFloat>, IEquatable<BiggerFloat>
     ///number is m × 10^n
     {
-        public float m { get; private set; } // you could set this to `double` and there should be minimal problem. Decimal should be better, but slower.
-        public long n { get; private set; }
-        public static readonly BigFloat Zero = new BigFloat() { m = 0, n = 0 };
-        public static readonly BigFloat One = new BigFloat() { m = 01, n = 0 };
+        public float m { get; private set; } // you could set this to `double` and there should be minimal problem. Decimal is better.
+        public BigInteger n { get; private set; }
+        public static readonly BiggerFloat Zero = new BiggerFloat() { m = 0, n = 0 };
+        public static readonly BiggerFloat One = new BiggerFloat() { m = 01, n = 0 };
 
-        public static readonly BigFloat IntMax = (BigFloat)int.MaxValue;
+        public static readonly BiggerFloat IntMax = (BiggerFloat)int.MaxValue;
 
         const float CompTolerance = 1e-6f;
         const int CompTolerancei = 6;
 
 
-        public BigFloat Arrange() // Sets Numerator to be at range of `[1,10)`
+        public BiggerFloat Arrange() // Sets Numerator to be at range of `[1,10)`
         {
             float absm = Mathf.Abs(m);
             if (absm < float.Epsilon)
@@ -38,25 +38,24 @@ namespace BigFloatNumerics
         }
 
         #region constructors
-        public BigFloat(string value)
+        public BiggerFloat(string value)
         {
-            BigFloat bf = Parse(value);
+            BiggerFloat bf = Parse(value);
             this.m = bf.m;
             this.n = bf.n;
         }
-        public BigFloat(float m, long n)
+        public BiggerFloat(float m, BigInteger n)
         {
             this.m = m;
             this.n = n;
             Arrange();
         }
-        public BigFloat(BigInteger value)
+        public BiggerFloat(BigInteger value)
         {
             int log = (int)Math.Floor(BigInteger.Log10(BigInteger.Abs(value)));
             if (log < 8)
             {
                 m = (float)value;
-                n = 0;
                 Arrange();
                 return;
             }
@@ -64,54 +63,53 @@ namespace BigFloatNumerics
             int valueDividedByLog = (int)(value / BigInteger.Pow(10, log - 8));
             m = valueDividedByLog / 1e8f; // Int.Max =~ 2e9. so divide to int range then divide again to double range.
         }
-        public BigFloat(BigFloat value)
+        public BiggerFloat(BiggerFloat value)
         {
             this.m = value.m;
             this.n = value.n;
         }
-        public BigFloat(ulong value)
+        public BiggerFloat(ulong value)
         {
             m = (float)value;
-            n = 0;
+            n = BigInteger.Zero;
             Arrange();
         }
-        public BigFloat(long value)
+        public BiggerFloat(long value)
         {
             m = (float)value;
-            n = 0;
+            n = BigInteger.Zero;
             Arrange();
         }
-        public BigFloat(uint value)
+        public BiggerFloat(uint value)
         {
             m = (float)value;
-            n = 0;
+            n = BigInteger.Zero;
             Arrange();
         }
-        public BigFloat(int value)
+        public BiggerFloat(int value)
         {
             m = (float)value;
-            n = 0;
+            n = BigInteger.Zero;
             Arrange();
         }
-        public BigFloat(float value)
+        public BiggerFloat(float value)
         {
             m = (float)value;
-            n = 0;
+            n = BigInteger.Zero;
             Arrange();
         }
-        public BigFloat(double value) : this(value.ToString("e9"))// converts to "123e+5678", hence "+5678" can be parsed correctly, is very lazy approach
+        public BiggerFloat(double value) : this(value.ToString("e9"))// converts to "123e+5678", hence "+5678" can be parsed correctly, is very lazy approach
         {
         }
-        public BigFloat(decimal value)
+        public BiggerFloat(decimal value)
         {
             m = (float)value;
-            n = 0;
             Arrange();
         }
         #endregion
 
         #region basic arithmetic
-        public BigFloat Add(BigFloat other)
+        public BiggerFloat Add(BiggerFloat other)
         {
             if (this.n > other.n)
             {
@@ -130,20 +128,20 @@ namespace BigFloatNumerics
 
             return this;
         }
-        public BigFloat Subtract(BigFloat other)
+        public BiggerFloat Subtract(BiggerFloat other)
         {
             return Add(other.Negate());
         }
 
 
-        public BigFloat Multiply(BigFloat other)
+        public BiggerFloat Multiply(BiggerFloat other)
         {
             this.m *= other.m;
             this.n += other.n;
             this.Arrange();
             return this;
         }
-        public BigFloat Divide(BigFloat other)
+        public BiggerFloat Divide(BiggerFloat other)
         {
             if (other.m == 0)
                 throw new System.DivideByZeroException("other");
@@ -153,12 +151,12 @@ namespace BigFloatNumerics
             this.Arrange();
             return this;
         }
-        public BigFloat Remainder(BigFloat other)
+        public BiggerFloat Remainder(BiggerFloat other)
         {
 
             throw new NotImplementedException("Does not mattered to me lol");
         }
-        public BigFloat Pow(int exponent) // there is no smart way to do float lol
+        public BiggerFloat Pow(int exponent) // there is no smart way to do float lol
         {
             if (m == 0)
             {
@@ -174,7 +172,7 @@ namespace BigFloatNumerics
             return this;
         }
 
-        public BigFloat Pow(long exponent) // there is no smart way to do float lol
+        public BiggerFloat Pow(BigInteger exponent) // there is no smart way to do float lol
         {
             if (m == 0)
             {
@@ -189,12 +187,12 @@ namespace BigFloatNumerics
 
             return this;
         }
-        public BigFloat Abs()
+        public BiggerFloat Abs()
         {
             m = Mathf.Abs(m);
             return this;
         }
-        public BigFloat Negate()
+        public BiggerFloat Negate()
         {
             m = -m;
             return this;
@@ -203,16 +201,16 @@ namespace BigFloatNumerics
         {
             return n;
         }
-        public BigFloat Log10()
+        public BiggerFloat Log10()
         {
-            return Mathf.Log10(m) + (BigFloat)n;
+            return Mathf.Log10(m) + (BiggerFloat)n;
         }
-        public BigFloat Log(double baseValue)
+        public BiggerFloat Log(double baseValue)
         {
             return Log10() * Math.Log(baseValue, 10);
         }
 
-        public int CompareTo(BigFloat other)
+        public int CompareTo(BiggerFloat other)
         {
             var diff = this - other;
 
@@ -228,12 +226,12 @@ namespace BigFloatNumerics
             if (other == null)
                 throw new ArgumentNullException("other");
 
-            if (!(other is BigFloat))
-                throw new System.ArgumentException("other is not a BigFloat");
+            if (!(other is BiggerFloat))
+                throw new System.ArgumentException("other is not a BiggerFloat");
 
-            return CompareTo((BigFloat)other);
+            return CompareTo((BiggerFloat)other);
         }
-        public bool Equals(BigFloat other)
+        public bool Equals(BiggerFloat other)
         {
             int comResult = CompareTo(other);
             return comResult == 0;
@@ -245,54 +243,54 @@ namespace BigFloatNumerics
         #endregion
 
         #region Derived static Arithmetic methods
-        public static int Compare(BigFloat left, BigFloat right)
+        public static int Compare(BiggerFloat left, BiggerFloat right)
         {
-            return (new BigFloat(left)).CompareTo(right);
+            return (new BiggerFloat(left)).CompareTo(right);
         }
 
-        public static BigFloat Negate(BigFloat value)
+        public static BiggerFloat Negate(BiggerFloat value)
         {
-            return (new BigFloat(value)).Negate();
+            return (new BiggerFloat(value)).Negate();
         }
-        public static BigFloat Abs(BigFloat value)
+        public static BiggerFloat Abs(BiggerFloat value)
         {
-            return (new BigFloat(value)).Abs();
+            return (new BiggerFloat(value)).Abs();
         }
-        public static BigFloat Add(BigFloat left, BigFloat right)
+        public static BiggerFloat Add(BiggerFloat left, BiggerFloat right)
         {
-            return (new BigFloat(left)).Add(right);
+            return (new BiggerFloat(left)).Add(right);
         }
-        public static BigFloat Subtract(BigFloat left, BigFloat right)
+        public static BiggerFloat Subtract(BiggerFloat left, BiggerFloat right)
         {
-            return (new BigFloat(left)).Subtract(right);
+            return (new BiggerFloat(left)).Subtract(right);
         }
-        public static BigFloat Multiply(BigFloat left, BigFloat right)
+        public static BiggerFloat Multiply(BiggerFloat left, BiggerFloat right)
         {
-            return (new BigFloat(left)).Multiply(right);
+            return (new BiggerFloat(left)).Multiply(right);
         }
-        public static BigFloat Divide(BigFloat left, BigFloat right)
+        public static BiggerFloat Divide(BiggerFloat left, BiggerFloat right)
         {
-            return (new BigFloat(left)).Divide(right);
+            return (new BiggerFloat(left)).Divide(right);
         }
-        public static BigFloat Pow(BigFloat value, int exponent)
+        public static BiggerFloat Pow(BiggerFloat value, int exponent)
         {
-            return (new BigFloat(value)).Pow(exponent);
+            return (new BiggerFloat(value)).Pow(exponent);
         }
-        public static BigFloat Pow(BigFloat value, long exponent)
+        public static BiggerFloat Pow(BiggerFloat value, BigInteger exponent)
         {
-            return (new BigFloat(value)).Pow(exponent);
+            return (new BiggerFloat(value)).Pow(exponent);
         }
-        public static BigFloat Remainder(BigFloat left, BigFloat right)
+        public static BiggerFloat Remainder(BiggerFloat left, BiggerFloat right)
         {
-            return (new BigFloat(left)).Remainder(right);
+            return (new BiggerFloat(left)).Remainder(right);
         }
-        public static BigFloat Log10(BigFloat value)
+        public static BiggerFloat Log10(BiggerFloat value)
         {
-            return (new BigFloat(value)).Log10();
+            return (new BiggerFloat(value)).Log10();
         }
-        public static BigFloat Log(BigFloat value, double baseValue)
+        public static BiggerFloat Log(BiggerFloat value, double baseValue)
         {
-            return (new BigFloat(value)).Log(baseValue);
+            return (new BiggerFloat(value)).Log(baseValue);
         }
         #endregion
 
@@ -303,7 +301,7 @@ namespace BigFloatNumerics
         }
         public string ToHumanFriendlyString(int? maxLength = null)
         {
-            if (maxLength == null)
+            if(maxLength == null)
                 return $"{m:F10}e{n}";
             if (BigInteger.Abs(n) < maxLength)
             {
@@ -323,7 +321,7 @@ namespace BigFloatNumerics
             }
         }
 
-        public static BigFloat Parse(string value)
+        public static BiggerFloat Parse(string value)
         {
             if (value == null)
                 throw new ArgumentNullException("value");
@@ -339,13 +337,13 @@ namespace BigFloatNumerics
                 {
                     //just floating point 
                     double Signifacand = double.Parse(value);
-                    return (new BigFloat(Signifacand)).Arrange();
+                    return (new BiggerFloat(Signifacand)).Arrange();
                 }
                 else
                 {
                     //just big integer
                     BigInteger nu = BigInteger.Parse(value);
-                    return (new BigFloat(nu)).Arrange();
+                    return (new BiggerFloat(nu)).Arrange();
                 }
             }
             else
@@ -353,16 +351,16 @@ namespace BigFloatNumerics
                 //decimal point (length - pos - 1)
                 float Signifacand = float.Parse(value.Substring(0, pos));
 
-                long denominator = long.Parse(value.Substring(pos));
+                BigInteger denominator = BigInteger.Parse(value.Substring(pos));
 
-                return (new BigFloat(Signifacand, denominator)).Arrange();
+                return (new BiggerFloat(Signifacand, denominator)).Arrange();
             }
         }
-        public static bool TryParse(string value, out BigFloat result)
+        public static bool TryParse(string value, out BiggerFloat result)
         {
             try
             {
-                result = BigFloat.Parse(value);
+                result = BiggerFloat.Parse(value);
                 return true;
             }
             catch (ArgumentNullException)
@@ -380,75 +378,75 @@ namespace BigFloatNumerics
         #endregion
 
         #region Derived Functions and Operators
-        public static BigFloat operator -(BigFloat value)
+        public static BiggerFloat operator -(BiggerFloat value)
         {
-            return (new BigFloat(value)).Negate();
+            return (new BiggerFloat(value)).Negate();
         }
-        public static BigFloat operator -(BigFloat left, BigFloat right)
+        public static BiggerFloat operator -(BiggerFloat left, BiggerFloat right)
         {
-            return (new BigFloat(left)).Subtract(right);
+            return (new BiggerFloat(left)).Subtract(right);
         }
-        public static BigFloat operator --(BigFloat value)
+        public static BiggerFloat operator --(BiggerFloat value)
         {
             return value.Subtract(1);
         }
-        public static BigFloat operator +(BigFloat left, BigFloat right)
+        public static BiggerFloat operator +(BiggerFloat left, BiggerFloat right)
         {
-            return (new BigFloat(left)).Add(right);
+            return (new BiggerFloat(left)).Add(right);
         }
-        public static BigFloat operator +(BigFloat value)
+        public static BiggerFloat operator +(BiggerFloat value)
         {
-            return (new BigFloat(value)).Abs();
+            return (new BiggerFloat(value)).Abs();
         }
-        public static BigFloat operator ++(BigFloat value)
+        public static BiggerFloat operator ++(BiggerFloat value)
         {
             return value.Add(1);
         }
-        public static BigFloat operator %(BigFloat left, BigFloat right)
+        public static BiggerFloat operator %(BiggerFloat left, BiggerFloat right)
         {
-            return (new BigFloat(left)).Remainder(right);
+            return (new BiggerFloat(left)).Remainder(right);
         }
-        public static BigFloat operator *(BigFloat left, BigFloat right)
+        public static BiggerFloat operator *(BiggerFloat left, BiggerFloat right)
         {
-            return (new BigFloat(left)).Multiply(right);
+            return (new BiggerFloat(left)).Multiply(right);
         }
-        public static BigFloat operator /(BigFloat left, BigFloat right)
+        public static BiggerFloat operator /(BiggerFloat left, BiggerFloat right)
         {
-            return (new BigFloat(left)).Divide(right);
+            return (new BiggerFloat(left)).Divide(right);
         }
-        public static BigFloat operator ^(BigFloat left, int right)
+        public static BiggerFloat operator ^(BiggerFloat left, int right)
         {
-            return (new BigFloat(left)).Pow(right);
+            return (new BiggerFloat(left)).Pow(right);
         }
 
-        public static bool operator !=(BigFloat left, BigFloat right)
+        public static bool operator !=(BiggerFloat left, BiggerFloat right)
         {
             return Compare(left, right) != 0;
         }
-        public static bool operator ==(BigFloat left, BigFloat right)
+        public static bool operator ==(BiggerFloat left, BiggerFloat right)
         {
             return Compare(left, right) == 0;
         }
-        public static bool operator <(BigFloat left, BigFloat right)
+        public static bool operator <(BiggerFloat left, BiggerFloat right)
         {
             return Compare(left, right) < 0;
         }
-        public static bool operator <=(BigFloat left, BigFloat right)
+        public static bool operator <=(BiggerFloat left, BiggerFloat right)
         {
             return Compare(left, right) <= 0;
         }
-        public static bool operator >(BigFloat left, BigFloat right)
+        public static bool operator >(BiggerFloat left, BiggerFloat right)
         {
             return Compare(left, right) > 0;
         }
-        public static bool operator >=(BigFloat left, BigFloat right)
+        public static bool operator >=(BiggerFloat left, BiggerFloat right)
         {
             return Compare(left, right) >= 0;
         }
         #endregion
 
         #region Casts
-        public static explicit operator decimal(BigFloat value)
+        public static explicit operator decimal(BiggerFloat value)
         {
             if (decimal.MinValue > value) throw new System.OverflowException("value is less than System.decimal.MinValue.");
             if (decimal.MaxValue < value) throw new System.OverflowException("value is greater than System.decimal.MaxValue.");
@@ -456,7 +454,7 @@ namespace BigFloatNumerics
             return (decimal)(value.m * Math.Pow(10, (double)value.n));
         }
 
-        public static explicit operator BigInteger(BigFloat v)
+        public static explicit operator BigInteger(BiggerFloat v)
         {
             if ((v.n - 5) > int.MaxValue) throw new OverflowException("value is too large");
             if ((v > int.MaxValue || v < int.MinValue))
@@ -466,14 +464,14 @@ namespace BigFloatNumerics
             else return (int)v;
         }
 
-        public static explicit operator double(BigFloat value)
+        public static explicit operator double(BiggerFloat value)
         {
             if (double.MinValue > value) throw new System.OverflowException("value is less than System.double.MinValue.");
             if (double.MaxValue < value) throw new System.OverflowException("value is greater than System.double.MaxValue.");
 
             return (double)value.m * Math.Pow(10, (double)value.n);
         }
-        public static explicit operator float(BigFloat value)
+        public static explicit operator float(BiggerFloat value)
         {
             if (float.MinValue > value) throw new System.OverflowException("value is less than System.float.MinValue.");
             if (float.MaxValue < value) throw new System.OverflowException("value is greater than System.float.MaxValue.");
@@ -481,7 +479,7 @@ namespace BigFloatNumerics
             return (float)(value.m * Mathf.Pow(10, (float)value.n));
         }
 
-        public static explicit operator int(BigFloat value)
+        public static explicit operator int(BiggerFloat value)
         {
             if (int.MinValue > value) throw new System.OverflowException("value is less than System.float.MinValue.");
             if (int.MaxValue < value) throw new System.OverflowException("value is greater than System.float.MaxValue.");
@@ -490,57 +488,57 @@ namespace BigFloatNumerics
         }
 
 
-        public static implicit operator BigFloat(byte value)
+        public static implicit operator BiggerFloat(byte value)
         {
-            return new BigFloat((uint)value);
+            return new BiggerFloat((uint)value);
         }
-        public static implicit operator BigFloat(sbyte value)
+        public static implicit operator BiggerFloat(sbyte value)
         {
-            return new BigFloat((int)value);
+            return new BiggerFloat((int)value);
         }
-        public static implicit operator BigFloat(short value)
+        public static implicit operator BiggerFloat(short value)
         {
-            return new BigFloat((int)value);
+            return new BiggerFloat((int)value);
         }
-        public static implicit operator BigFloat(ushort value)
+        public static implicit operator BiggerFloat(ushort value)
         {
-            return new BigFloat((uint)value);
+            return new BiggerFloat((uint)value);
         }
-        public static implicit operator BigFloat(int value)
+        public static implicit operator BiggerFloat(int value)
         {
-            return new BigFloat(value);
+            return new BiggerFloat(value);
         }
-        public static implicit operator BigFloat(long value)
+        public static implicit operator BiggerFloat(long value)
         {
-            return new BigFloat(value);
+            return new BiggerFloat(value);
         }
-        public static implicit operator BigFloat(uint value)
+        public static implicit operator BiggerFloat(uint value)
         {
-            return new BigFloat(value);
+            return new BiggerFloat(value);
         }
-        public static implicit operator BigFloat(ulong value)
+        public static implicit operator BiggerFloat(ulong value)
         {
-            return new BigFloat(value);
+            return new BiggerFloat(value);
         }
-        public static implicit operator BigFloat(decimal value)
+        public static implicit operator BiggerFloat(decimal value)
         {
-            return new BigFloat(value);
+            return new BiggerFloat(value);
         }
-        public static implicit operator BigFloat(double value)
+        public static implicit operator BiggerFloat(double value)
         {
-            return new BigFloat(value);
+            return new BiggerFloat(value);
         }
-        public static implicit operator BigFloat(float value)
+        public static implicit operator BiggerFloat(float value)
         {
-            return new BigFloat(value);
+            return new BiggerFloat(value);
         }
-        public static implicit operator BigFloat(BigInteger value)
+        public static implicit operator BiggerFloat(BigInteger value)
         {
-            return new BigFloat(value);
+            return new BiggerFloat(value);
         }
-        public static explicit operator BigFloat(string value)
+        public static explicit operator BiggerFloat(string value)
         {
-            return new BigFloat(value);
+            return new BiggerFloat(value);
         }
         #endregion
     }

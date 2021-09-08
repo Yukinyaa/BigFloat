@@ -100,7 +100,7 @@ namespace BigFloatNumerics
 
 
 
-            BigFloat superLargeNumber = new BigFloat(1, (BigInteger)int.MaxValue + 1);
+            BigFloat superLargeNumber = new BigFloat(1, (long)int.MaxValue + 1);
 
             void LargFunc() { int tmp = (int)superLargeNumber; }
 
