@@ -54,6 +54,24 @@ namespace BigFloatNumerics
 
             Assert.AreEqual(new BigFloat(5, 7), new BigFloat(1, 10) / new BigFloat(2, 2));
         }
+        [Test]
+        public void MultTest()
+        {
+            Assert.AreEqual(new BigFloat(8), new BigFloat(4) * new BigFloat(2));
+            Assert.AreEqual(new BigFloat(2048), new BigFloat(1024) * new BigFloat(2));
+
+            Assert.AreEqual(new BigFloat(2048), new BigFloat(512) * new BigFloat(4));
+
+            Assert.AreEqual(new BigFloat(6, 7), new BigFloat(6, 2) * new BigFloat(1, 5));
+        }
+
+        [Test]
+        public void Pow_intTest()
+        {
+            Assert.AreEqual(new BigFloat(100), BigFloat.Pow(10, 2));
+            Assert.AreEqual(new BigFloat(1, 100), BigFloat.Pow(10, 100));
+            Assert.AreEqual(new BigFloat(1024), BigFloat.Pow(2, 10));
+        }
 
         [Test]
         public void CompareTest()

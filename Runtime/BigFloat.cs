@@ -158,7 +158,7 @@ namespace BigFloatNumerics
 
             throw new NotImplementedException("Does not mattered to me lol");
         }
-        public BigFloat Pow(int exponent) // there is no smart way to do float lol
+        public BigFloat Pow(int exponent)
         {
             if (m == 0)
             {
@@ -174,7 +174,22 @@ namespace BigFloatNumerics
             return this;
         }
 
-        public BigFloat Pow(long exponent) // there is no smart way to do float lol
+        public BigFloat Pow(float exponent)
+        {
+            long expE = (long)Mathf.Round(exponent);
+            float realE = (exponent - expE);
+            
+            float re_m = realE * m;
+            long re_m_r = (long)Mathf.Round(re_m);
+            
+            float re_m_e = re_m - re_m_r;
+
+            n += expE + re_m_r;
+            m =  Mathf.Pow(m, exponent) * Mathf.Pow(10, re_m);
+
+            return this;
+        }
+        public BigFloat Pow(long exponent) 
         {
             if (m == 0)
             {
