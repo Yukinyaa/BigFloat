@@ -19,8 +19,8 @@ namespace BigFloatNumerics
 
         public static readonly BigFloat IntMax = (BigFloat)int.MaxValue;
 
-        const float CompTolerance = 1e-6f;
-        const int CompTolerancei = 6;
+        const float CompTolerance = 1e-2f;
+        const int CompTolerancei = 2;
 
 
         public BigFloat Arrange() // Sets Numerator to be at range of `[1,10)`
@@ -165,9 +165,9 @@ namespace BigFloatNumerics
                 // Nothing to do
             }
             if (exponent > 30)
-                return Pow(Pow(this, exponent / 30), 30) + Pow(exponent % 30);
+                return Pow(Pow(this, exponent / 30), 30) * Pow(exponent % 30);
 
-            this.n += exponent;
+            this.n *= exponent;
             this.m = Mathf.Pow(m, exponent);
             Arrange();
 
@@ -176,17 +176,22 @@ namespace BigFloatNumerics
 
         public BigFloat Pow(float exponent)
         {
-            long expE = (long)Mathf.Round(exponent);
+
+            if (exponent > 30)
+                return Pow(Pow(this, exponent / 30), 30) ;
+
+            long expE = (long)Mathf.Floor(exponent);
             float realE = (exponent - expE);
             
-            float re_m = realE * m;
-            long re_m_r = (long)Mathf.Round(re_m);
+            float re_n = realE * n;
+            long re_n_r = (long)Mathf.Floor(re_n);
             
-            float re_m_e = re_m - re_m_r;
+            float re_n_e = re_n - re_n_r;
 
-            n += expE + re_m_r;
-            m =  Mathf.Pow(m, exponent) * Mathf.Pow(10, re_m);
-
+            n *= expE;
+            n += re_n_r;
+            m =  Mathf.Pow(m, exponent) * Mathf.Pow(10, re_n_e);
+            Arrange();
             return this;
         }
         public BigFloat Pow(long exponent) 
@@ -294,6 +299,10 @@ namespace BigFloatNumerics
             return (new BigFloat(value)).Pow(exponent);
         }
         public static BigFloat Pow(BigFloat value, long exponent)
+        {
+            return (new BigFloat(value)).Pow(exponent);
+        }
+        public static BigFloat Pow(BigFloat value, float exponent)
         {
             return (new BigFloat(value)).Pow(exponent);
         }

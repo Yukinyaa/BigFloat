@@ -74,6 +74,18 @@ namespace BigFloatNumerics
         }
 
         [Test]
+        public void Pow_floatTest()
+        {
+            Assert.AreEqual(new BigFloat(100), BigFloat.Pow(10, 2f));
+            Assert.AreEqual(new BigFloat(1, 100), BigFloat.Pow(10, 100f));
+            Assert.AreEqual(new BigFloat(1024), BigFloat.Pow(2, 10f));
+
+            Assert.AreEqual(new BigFloat(2048), BigFloat.Pow(4, 5.5f));
+            Assert.AreEqual(new BigFloat(2.3611148f, 972), BigFloat.Pow(3, 2038f));
+            Assert.AreEqual(new BigFloat(2.3611148f, 972), BigFloat.Pow(3 * 3 * 3, 2038f / 3));
+        }
+
+        [Test]
         public void CompareTest()
         {
             Assert.AreEqual(true, BigFloat.One > BigFloat.Zero);
